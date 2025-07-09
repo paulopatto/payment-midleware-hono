@@ -1,0 +1,28 @@
+name: Generate new release
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - reopened
+permissions:
+  contents: read
+
+jobs:
+  update_release_draft:
+    name: Generate Release version by release-drafter
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v6
+        with:
+          config-name: release-drafter.conf.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
