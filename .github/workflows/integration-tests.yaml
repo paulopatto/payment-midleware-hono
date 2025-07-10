@@ -1,0 +1,36 @@
+---
+name: Integration test with third-party processors
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  load-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
+
+      - name: Start services
+        run: docker-compose -f vendor/docker-compose.yml up -d
+
+      - name: Wait for services to start
+        run: sleep 30
+
+      - name: Run rinha load test with k6
+        uses: grafana/k6-action@v0.9.1
+        with:
+          script: k6 run tests/integration-test/rinha.js
+
+      - name: Stop services
+        if: always()
+        run: docker-compose -f vendor/docker-compose.yml down
+
