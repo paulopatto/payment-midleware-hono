@@ -1,48 +1,31 @@
 import { OpenAPIHono } from "@hono/zod-openapi";
-import { z } from "@hono/zod-openapi";
-import { createRoute } from "@hono/zod-openapi";
-import { v4 as uuidv4 } from "uuid";
+import { HonoAdapter } from "@bull-board/hono";
+import { serveStatic } from "@hono/node-server/serve-static";
+import { paymentQueue } from "./queue";
+import { createPaymentRoute } from "./payments";
+import { createBullBoard } from "@bull-board/api";
+import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 
 const app = new OpenAPIHono();
+const serverAdapter = new HonoAdapter(serveStatic);
+serverAdapter.setBasePath("/admin/queue");
 
-const paymentPostSchema = z.object({
-  correlationId: z.string().min(1).uuid(),
-  amount: z.number(),
+createBullBoard({
+  queues: [new BullMQAdapter(paymentQueue)],
+  serverAdapter,
 });
 
-app.get("/", (c) => c.text("Hello Node.js!"));
-app.get("/health", (c) =>
-  c.json({
-    services: [
-      {
-        api: { status: "UP" },
-        workers: { status: "OK" },
-        payment_processor_default: { status: "UP" },
-        payment_processor_fallback: { status: "UP" },
-      },
+app.route("/admin/queue", serverAdapter.registerPlugin());
+app.get("/payments-summary", (c) => c.json({ status: "pending" }));
+
+app.openapi(createPaymentRoute, async (c) => {
+  const paymentData = await c.req.json();
+  paymentQueue.add("paymentsQueue", paymentData);
+  return c.json({}, 202, {
+    headers: [
+      `Location: http://localhost:8080/payments/${paymentData.correlationId}`,
     ],
-  }),
-);
-app.get("/payments-summary", (c) => c.json({ status: "OK" }));
-
-const createPaymentRoute = createRoute({
-  method: "post",
-  path: "/payments",
-  request: { params: paymentPostSchema },
-  responses: {
-    201: {
-      description: "Register a payment",
-      content: {
-        "application/json": {
-          schema: {},
-        },
-      },
-    },
-  },
-});
-app.openapi(createPaymentRoute, (c) => {
-  const id = uuidv4();
-  c.json({}, 201, { headers: [`Location: ${id}`] });
+  });
 });
 
 export default app;

@@ -1,12 +1,16 @@
 import { serve } from "@hono/node-server";
+import { env } from "./env";
 import app from "./app";
 
-const PORT = process.env.PORT ?? 8080;
+const PORT = env.PORT;
 
-console.log(`Server is running. Listening on port ${PORT}...`);
-console.log(`Press [ctrl] + C (^C) to exit.`);
-
-const server = serve({ fetch: app.fetch, port: Number(PORT) });
+const server = serve(
+  { fetch: app.fetch, port: Number(PORT) },
+  ({ address, port }) => {
+    console.log(`Server is running on ${address}:${port}...`);
+    console.log(`Press [ctrl] + C (^C) to exit.`);
+  },
+);
 
 // graceful shutdown
 process.on("SIGINT", () => {
