@@ -1,7 +1,7 @@
 ---
 networks:
   backend:
-    drive: bridge
+    driver: bridge
   payment-processor:
     external: true
 
