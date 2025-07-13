@@ -27,7 +27,7 @@ jobs:
 
       - name: Setup K6 and run load test
         uses: grafana/setup-k6-action@v1.1.0
-        uses: grafana/run-k6-action@v1.2.0
+      - uses: grafana/run-k6-action@v1.2.0
         with:
           path: tests/integration-test/rinha.js
 
