@@ -1,5 +1,5 @@
 import { serve } from "@hono/node-server";
-import { env } from "./env";
+import { env } from "./shared/env";
 import app from "./app";
 
 const PORT = env.PORT;
