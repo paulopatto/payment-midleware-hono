@@ -7,10 +7,11 @@ on:
     types: [opened, reopened, synchronize]
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   update_release_draft:
-    name: Generate Release version and tagging by release-drafter
+    name: Generate Release version by release-drafter
     permissions:
       contents: write
       pull-requests: write
