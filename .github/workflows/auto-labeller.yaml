@@ -1,0 +1,20 @@
+name: Generate tagging pull requests
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+jobs:
+  update_release_draft:
+    name: Tagging pull requests by release-drafter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v6.1.0
+        with:
+          config-name: release-drafter.conf.yaml
+          commitish: main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
