@@ -5,13 +5,9 @@ on:
       - main
       - master
   pull_request:
-    types:
-      - opened
-      - edited
-      - synchronize
-      - reopened
+    types: [opened, reopened, synchronize]
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   update_release_draft:
@@ -24,5 +20,6 @@ jobs:
       - uses: release-drafter/release-drafter@v6
         with:
           config-name: release-drafter.conf.yaml
+          commitish: main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
