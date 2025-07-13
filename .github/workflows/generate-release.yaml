@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, reopened, synchronize]
 permissions:
   contents: read
   pull-requests: write
@@ -20,6 +18,5 @@ jobs:
       - uses: release-drafter/release-drafter@v6.1.0
         with:
           config-name: release-drafter.conf.yaml
-          commitish: main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
