@@ -1,0 +1,16 @@
+---
+networks:
+  backend:
+    driver: bridge
+  payment-processor:
+    external: true
+
+services:
+  redis:
+    image: redis:alpine
+    hostname: redis
+    ports:
+      - 6379:6379
+    networks:
+      - backend
+
