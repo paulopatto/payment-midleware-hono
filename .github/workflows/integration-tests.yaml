@@ -25,20 +25,12 @@ jobs:
       - name: Wait for services to start
         run: sleep 30
 
-      # https://grafana.com/docs/k6/latest/set-up/install-k6/
-      # - name: Install k6
-      #   run: |
-      #     sudo apt-get update
-      #     sudo apt-get install -y apt-transport-https ca-certificates
-      #     sudo apt-key adv --fetch-keys https://apt.grafana.com/gpg.key
-      #     echo "deb https://apt.grafana.com stable main" | sudo tee -a /etc/apt/sources.list.d/grafana.list
-      #     sudo apt-get update
-      #     sudo apt-get install k6
-
-      - name: Run rinha load test with k6
-        uses: grafana/k6-action@v0.9.1
+      - name: Setup K6 and run load test
+        uses: grafana/setup-k6-action@v1.1.0
+        uses: grafana/run-k6-action@v1.2.0
         with:
-          script: k6 run tests/integration-test/rinha.js
+          path: tests/integration-test/rinha.js
+
 
       - name: Stop services
         if: always()
