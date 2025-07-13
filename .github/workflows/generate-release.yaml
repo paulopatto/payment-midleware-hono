@@ -1,23 +1,22 @@
-name: Generate new release
+name: Generate new release a tagging pull requests
 on:
   push:
     branches:
       - main
-      - master
   pull_request:
     types: [opened, reopened, synchronize]
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   update_release_draft:
-    name: Generate Release version by release-drafter
+    name: Generate Release version and tagging by release-drafter
     permissions:
       contents: write
       pull-requests: write
     runs-on: ubuntu-latest
     steps:
-      - uses: release-drafter/release-drafter@v6
+      - uses: release-drafter/release-drafter@v6.1.0
         with:
           config-name: release-drafter.conf.yaml
           commitish: main
