@@ -1,30 +1,16 @@
 import { serve } from "@hono/node-server";
-import { Hono } from "hono";
+import { env } from "./shared/env";
+import app from "./app";
 
-const app = new Hono();
-const PORT = process.env.PORT ?? 8080;
+const PORT = env.PORT;
 
-app.get("/", (c) => c.text("Hello Node.js!"));
-app.get("/health", (c) =>
-  c.json({
-    services: [
-      {
-        api: { status: "UP" },
-        workers: { status: "OK" },
-        payment_processor_default: { status: "UP" },
-        payment_processor_fallback: { status: "UP" },
-      },
-    ],
-  }),
+const server = serve(
+  { fetch: app.fetch, port: Number(PORT) },
+  ({ address, port }) => {
+    console.log(`Server is running on ${address}:${port}...`);
+    console.log(`Press [ctrl] + C (^C) to exit.`);
+  },
 );
-app.get("/payments-summary", (c) => c.json({ status: "OK" }));
-app.post("/payments", (c) =>
-  c.json({ status: "created" }, 201, { headers: [`Location: ::uuid::`] }),
-);
-
-console.log(`Server is running. Listening on port ${PORT}...`);
-console.log(`Press [ctrl] + C (^C) to exit.`);
-const server = serve({ fetch: app.fetch, port: Number(PORT) });
 
 // graceful shutdown
 process.on("SIGINT", () => {
