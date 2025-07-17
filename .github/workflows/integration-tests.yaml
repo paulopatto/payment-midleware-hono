@@ -21,6 +21,7 @@ jobs:
 
       - name: Start services
         run: docker-compose -f vendor/docker-compose.yml up -d
+      - run: docker-compose -f compose.yaml up --build -d
 
       - name: Wait for services to start
         run: sleep 30
