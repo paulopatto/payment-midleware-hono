@@ -24,9 +24,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  test-suite:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
   k6-tests:
     name: K6 Load Test
     runs-on: ubuntu-latest
+    dependencies: [test-suite]
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
