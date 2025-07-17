@@ -45,7 +45,8 @@ jobs:
   k6-tests:
     name: K6 Load Test
     runs-on: ubuntu-latest
-    dependencies: [test-suite]
+    needs: 
+      - test-suite
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     steps:
       - name: Checkout code
