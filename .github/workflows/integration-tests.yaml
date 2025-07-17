@@ -34,6 +34,8 @@ jobs:
 
 
       - name: Stop services
-        if: always()
-        run: docker-compose -f vendor/docker-compose.yml down
+        run: sleep 30
+      - if: always()
+        run: docker-compose -f vendor/docker-compose.yml down --rmi all
+      - run: docker-compose -f compose.yaml down --rmi all
 
