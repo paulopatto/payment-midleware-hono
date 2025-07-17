@@ -28,7 +28,7 @@ async function sendPaymentRequest(processor: { endpoint: string; name: string },
   return response;
 }
 
-export async function paymentWorker(job) {
+export async function paymentWorker(job: any) {
   
   const paymentData = job.data;
   let processor = processors.default;
