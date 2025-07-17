@@ -2,14 +2,20 @@
   "name": "rinha_ed3_payment",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsx watch src/index.ts"
-  },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/index.ts",
+    "build": "rm -rf dist && tsc"
+  },
+  "keywords": [
+    "Hono",
+    "BullMQ",
+    "Redis",
+    "Payment"
+  ],
   "dependencies": {
     "@bull-board/api": "^6.11.0",
     "@bull-board/hono": "^6.11.0",
@@ -24,7 +30,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.0.12",
-    "tsx": "^4.20.3"
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   }
 }
-
