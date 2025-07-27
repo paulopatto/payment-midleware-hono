@@ -1,5 +1,7 @@
+import { register } from "module";
 import { env } from "../shared/env";
-import { redis } from "../shared/redis";
+import { redis, redisPrefix } from "../shared/redis";
+
 
 const processors = {
   default: {
@@ -28,17 +30,27 @@ async function sendPaymentRequest(processor: { endpoint: string; name: string },
   return response;
 }
 
+//FIXME: Arrumar a tipagem de paymentData
+async function registerPayment(processor: { endpoint: string; name: string }, paymentData: any) {
+  const procName = processor.name;
+  const multi = redis.multi();
+  multi.incr(`${redisPrefix}summary:${procName}:count`);
+  multi.incrbyfloat(`${redisPrefix}summary:${procName}:amount`, paymentData.amount);
+  await multi.exec();
+}
+
 export async function paymentWorker(job) {
-  
+
   const paymentData = job.data;
   let processor = processors.default;
 
   try {
 
+    //FIXME: Mudar isso para que dada as tentativas ele jogue para a fila de fallback
     if(job.attemptsMade >= 2) {
       console.warn(`Retrying payment job ${job.id} for correlationId ${paymentData.correlationId}`);
     }
-    
+
     if (job.attemptsMade >= env.PAYMENT_PROCESSOR_RETRY_LIMIT_BEFORE_USE_FALLBACK) {
       console.warn(
         `Using fallback payment processor after ${job.attemptsMade} attempts`,
@@ -53,17 +65,16 @@ export async function paymentWorker(job) {
     );
 
     if (response.ok) {
-      const procName = processor.name;
-      const multi = redis.multi();
-      multi.incr(`summary:${procName}:count`);
-      multi.incrbyfloat(`summary:${procName}:amount`, paymentData.amount);
-      await multi.exec();
+      registerPayment(
+        processor,
+        paymentData
+      );
     }
 
     return null;
   } catch (error: any) {
     console.error(
-      `Error with processor due ${error.message}`, 
+      `Error with processor due ${error.message}`,
       {correlationId: paymentData.correlationId, error}
     );
     throw error;
