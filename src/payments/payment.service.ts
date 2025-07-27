@@ -1,6 +1,7 @@
 import { savePaymentToRedis } from "../payments/payment.repository";
 import { paymentQueue } from "../shared/queue";
 import { redis } from "../shared/redis";
+import { paymentPostSchema, paymentSummarySchema } from "./payment.types";
 
 export async function createPaymentHandler(c) {
   const paymentData = await c.req.json();
@@ -14,6 +15,7 @@ export async function createPaymentHandler(c) {
     attempts: 10,
     backoff: { type: "exponential", delay: 500 },
   });
+  
   return c.json({}, 202, {
     headers: [
       `Location: http://localhost:8080/payments/${paymentData.correlationId}`,

@@ -6,7 +6,15 @@ import { paymentPostSchema, paymentSummarySchema } from "./payment.types";
 export const createPaymentRoute = createRoute({
   method: "post",
   path: "/payments",
-  request: { body: { content: paymentPostSchema } },
+  request: {
+    body: { 
+      content: { 
+        "application/json": { 
+          schema: paymentPostSchema 
+        } 
+      },
+    },
+  },
   responses: {
     202: {
       description: "Register a payment",

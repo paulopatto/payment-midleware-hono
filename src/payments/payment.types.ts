@@ -2,7 +2,7 @@ import { z } from "@hono/zod-openapi";
 
 export const paymentPostSchema = z.object({
   correlationId: z.string().min(1).uuid(),
-  amount: z.number(),
+  amount: z.number().positive(),
 });
 
 export const paymentSummarySchema = z.object({
@@ -12,6 +12,6 @@ export const paymentSummarySchema = z.object({
   }),
   fallback: z.object({
     totalRequests: z.number(),
-    totalAmount: z.number(),
+    totalAmount: z.number().positive(),
   }),
 });
