@@ -1,4 +1,4 @@
-name: Generate new release a tagging pull requests
+name: Generate new release
 on:
   push:
     branches:

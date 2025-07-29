@@ -5,7 +5,7 @@ FROM base AS builder
 RUN apk add --no-cache gcompat
 WORKDIR /app
 
-COPY package*json tsconfig.json src ./
+COPY package*json tsconfig.json src/ ./
 
 RUN npm ci && \
     npm run build && \
@@ -15,10 +15,9 @@ FROM base AS runner
 ARG PORT=8080
 
 ENV PORT=${PORT}
-ENV REDIS_URL
-ENV PAYMENT_PROCESSOR_URL_DEFAULT
-ENV PAYMENT_PROCESSOR_URL_FALLBACK
-
+# ENV REDIS_URL
+# ENV PAYMENT_PROCESSOR_URL_DEFAULT
+# ENV PAYMENT_PROCESSOR_URL_FALLBACK
 
 WORKDIR /app
 

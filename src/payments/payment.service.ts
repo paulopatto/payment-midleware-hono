@@ -1,9 +1,8 @@
-import { savePaymentToRedis } from "../payments/payment.repository";
+import { savePaymentToRedis } from "./payment.repository";
 import { paymentQueue } from "../shared/queue";
 import { redis, redisPrefix } from "../shared/redis";
-import { paymentPostSchema, paymentSummarySchema } from "./payment.types";
 
-export async function createPaymentHandler(c) {
+export async function createPaymentHandler(c: any) {
   const paymentData = await c.req.json();
   const requestedAt = new Date().toISOString();
   const payload = {
@@ -31,8 +30,12 @@ async function getTransactions(procName: string, start: number, end: number) {
 
 //FIXME: Mover isso para um repository
 export async function getSummaryHandler(c) {
-  const start = c.req.query("from") ? new Date(c.req.query("from")).getTime() : 0;
-  const end = c.req.query("to") ? new Date(c.req.query("to")).getTime() : Date.now();
+  const start = c.req.query("from")
+    ? new Date(c.req.query("from")).getTime()
+    : 0;
+  const end = c.req.query("to")
+    ? new Date(c.req.query("to")).getTime()
+    : Date.now();
 
   const defaultTransactions = await getTransactions("default", start, end);
   const fallbackTransactions = await getTransactions("fallback", start, end);
@@ -60,6 +63,6 @@ export async function getSummaryHandler(c) {
     },
   };
 
-
   return c.json(summary);
 }
+
