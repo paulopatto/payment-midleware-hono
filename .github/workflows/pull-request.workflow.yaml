@@ -1,0 +1,80 @@
+---
+name: CI for pull requests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+jobs:
+  update_release_draft:
+    name: Tagging pull requests by release-drafter
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: release-drafter/release-drafter@v6.1.0
+        with:
+          config-name: release-drafter.conf.yaml
+          commitish: main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test-suite:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+  k6-tests:
+    name: K6 Load Test
+    runs-on: ubuntu-latest
+    needs: 
+      - test-suite
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
+
+      - name: Start services
+        run: docker-compose -f vendor/docker-compose.yml up -d
+      - run: docker-compose -f compose.yaml up --build -d
+
+      - name: Wait for services to start
+        run: sleep 30
+
+      - name: Setup K6 and run load test
+        uses: grafana/setup-k6-action@v1.1.0
+      - uses: grafana/run-k6-action@v1.2.0
+        with:
+          path: tests/integration-test/rinha.js
+
+      - name: Cool down
+        run: sleep 15
+      - name: Cleanup
+        if: always()
+        run: docker-compose -f compose.yaml down --rmi all
+      - run:  sleep 10
+      - run: docker-compose -f vendor/docker-compose.yml down --rmi all
+

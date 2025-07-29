@@ -1,8 +1,8 @@
-import { savePaymentToRedis } from "../payments/payment.repository";
+import { savePaymentToRedis } from "./payment.repository";
 import { paymentQueue } from "../shared/queue";
 import { redis } from "../shared/redis";
 
-export async function createPaymentHandler(c) {
+export async function createPaymentHandler(c: any) {
   const paymentData = await c.req.json();
   const requestedAt = new Date().toISOString();
   const payload = {
@@ -22,7 +22,7 @@ export async function createPaymentHandler(c) {
 }
 
 //FIXME: Mover isso para um repository
-export async function getSummaryHandler(c) {
+export async function getSummaryHandler(c: any) {
   const summary = {
     default: {
       totalRequests: await redis.get("summary:default:count") || 0,

@@ -19,7 +19,17 @@
 - [Node.js](https://nodejs.org/en/download/) (LTS 22)
 - [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
 
-## Instalação
+## Produção 
+
+Variaveis de ambiente necessárias:
+
+- REDIS_URL
+- PAYMENT_PROCESSOR_URL_DEFAULT
+- PAYMENT_PROCESSOR_URL_FALLBACK
+
+## Desenvolvimento
+
+### Instalação
 
 1.  Clone o repositório:
 
@@ -35,7 +45,7 @@ cd rinha_ed3_payment
 npm install # ou yarn install
 ```
 
-## Execução
+### Execução
 
 Para executar o projeto em modo de desenvolvimento:
 
@@ -49,12 +59,11 @@ Isso iniciará o servidor usando `tsx watch src/index.ts` e reiniciará automati
 
 As dependências do projeto estão listadas no arquivo `package.json`.
 
-- **Produção:**
-  - `@hono/node-server`: Adaptador para executar o Hono em Node.js.
-  - `@hono/zod-openapi`: Integração do Zod com OpenAPI para Hono.
-  - `hone`: (A descrição dessa dependência não foi fornecida, verificar a documentação do projeto)
-  - `zod`: Biblioteca de declaração e validação de esquemas.
-- **Desenvolvimento:**
-  - `@types/node`: Definições de tipo para Node.js.
-  - `tsx`: Executor de TypeScript com suporte a JSX.
+
+- `hono`: Micro framework web
+- `@hono/node-server`: Adaptador para executar o Hono em Node.js.
+- `@hono/zod-openapi`: Integração do Zod com OpenAPI para Hono.
+- `zod`: Biblioteca de declaração e validação de esquemas.
+- `redisio`: Biblioteca para acesso ao memory database Redis
+
 
