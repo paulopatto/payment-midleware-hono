@@ -36,6 +36,13 @@ async function registerPayment(processor: { endpoint: string; name: string }, pa
   const multi = redis.multi();
   multi.incr(`${redisPrefix}summary:${procName}:count`);
   multi.incrbyfloat(`${redisPrefix}summary:${procName}:amount`, paymentData.amount);
+  // DOC: https://redis.io/docs/latest/commands/zadd/
+  multi.zadd(
+    `${redisPrefix}summary:${procName}:transactions`,
+    paymentData.requestedAt ? new Date(paymentData.requestedAt).getTime() : Date.now(),
+    JSON.stringify(paymentData)
+  );
+
   await multi.exec();
 }
 
