@@ -25,7 +25,8 @@ export async function createPaymentHandler(c: any) {
 async function getTransactions(procName: string, start: number, end: number) {
   const key = `${redisPrefix}summary:${procName}:transactions`;
   const results = await redis.zrangebyscore(key, start, end);
-  return results.map((item) => JSON.parse(item));
+  const parsedResults = results.map((item) => JSON.parse(item));
+  return parsedResults;
 }
 
 //FIXME: Mover isso para um repository
@@ -53,13 +54,11 @@ export async function getSummaryHandler(c) {
   const summary = {
     default: {
       totalRequests: defaultTransactions.length,
-      totalAmount: defaultTransactions.reduce((acc, t) => acc + t.amount, 0),
-      transactions: defaultTransactions,
+      totalAmount: await defaultTransactions.reduce((acc, t) => acc + t.amount, 0),
     },
     fallback: {
       totalRequests: fallbackTransactions.length,
-      totalAmount: fallbackTransactions.reduce((acc, t) => acc + t.amount, 0),
-      transactions: fallbackTransactions,
+      totalAmount: await fallbackTransactions.reduce((acc, t) => acc + t.amount, 0),
     },
   };
 

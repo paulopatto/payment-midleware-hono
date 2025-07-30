@@ -3,7 +3,6 @@ import { faker } from '@faker-js/faker';
 import app from '../../src/app';
 import { paymentQueue } from '../../src/shared/queue';
 
-
 describe('POST /payments', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -20,7 +19,7 @@ describe('POST /payments', () => {
       paymentQueueAddSpy = vi.spyOn(paymentQueue, "add").mockResolvedValueOnce({} as any);
       correlationId = faker.string.uuid();
       amount = faker.number.int({ min: 1, max: 100 });
-      
+
       // Act
       response = await app.request('/payments', {
         method: 'POST',
@@ -83,4 +82,39 @@ describe('POST /payments', () => {
       expect(response.status).toBe(400);
     });
   });
+});
+
+describe('GET /payments-summary', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  let response: Response;
+
+  beforeEach(async () => {
+    // Arrange
+    response = await app.request('/payments-summary', {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  });
+
+  it('returns 200 status code', () => {
+    expect(response.status).toBe(200);
+  });
+
+  // it('returns valid payment summary report', () => {
+  //   expect(response.body).toEqual(
+  //     expect.objectContaining({
+  //       default: expect.objectContaining({
+  //         totalRequests: expect.any(Number),
+  //         totalAmount: expect.any(Number),
+  //       }),
+  //       fallback: expect.objectContaining({
+  //         totalRequests: expect.any(Number),
+  //         totalAmount: expect.any(Number),
+  //       }),
+  //     })
+  //   );
+  // });
 });
