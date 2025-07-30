@@ -27,6 +27,16 @@ jobs:
   test-suite:
     name: Test Suite
     runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout code
         uses: actions/checkout@v4.2.2
@@ -36,6 +46,16 @@ jobs:
         with:
           node-version: '22'
           cache: 'npm'
+
+      - name: Build .env
+        run: |
+          echo "NODE_ENV=test" > .env.test
+          echo "PORT=3000" >> .env.test
+          echo "REDIS_URL=redis://localhost:6379" >> .env.test
+          echo "REDIS_PREFIX=test:" >> .env.test
+          echo "PAYMENT_PROCESSOR_URL_DEFAULT=http://localhost:8001" >> .env.test
+          echo "PAYMENT_PROCESSOR_URL_FALLBACK=http://localhost:8002" >> .env.test
+          echo "PAYMENT_PROCESSOR_RETRY_LIMIT_BEFORE_USE_FALLBACK=2" >> .env
 
       - name: Install dependencies
         run: |

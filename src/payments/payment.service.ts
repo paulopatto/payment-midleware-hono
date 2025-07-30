@@ -30,7 +30,7 @@ async function getTransactions(procName: string, start: number, end: number) {
 }
 
 //FIXME: Mover isso para um repository
-export async function getSummaryHandler(c) {
+export async function getSummaryHandler(c: any) {
   const start = c.req.query("from")
     ? new Date(c.req.query("from")).getTime()
     : 0;
