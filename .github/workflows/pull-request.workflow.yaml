@@ -38,7 +38,9 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --force --no-audit
+        run: |
+          npm ci --force --no-audit
+          npm install @rollup/rollup-linux-x64-gnu --save-optional
 
       - name: Run tests
         run: npm test
