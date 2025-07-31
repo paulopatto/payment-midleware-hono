@@ -24,6 +24,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  dependency-scanner:
+    name: Dependency Scanner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check if deps (package*.json) changed # Alternativamente poderia usar o dorny/paths-filter
+        id: check-changes
+        run: |
+          if git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep -E "(package\.json|package-lock\.json)"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Security audit
+        if: steps.check-changes.outputs.changed == 'true'
+        run: npm audit --audit-level high
+
   test-suite:
     name: Test Suite
     runs-on: ubuntu-latest
