@@ -6,9 +6,16 @@
   "license": "ISC",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 0",
+    "test": "NODE_ENV=test vitest run",
+    "test:watch": "NODE_ENV=test vitest --watch",
+    "build": "rm -rf dist && tsc",
+    "start:processors": "docker compose --file vendor/docker-compose.yml up --detach",
+    "stop:processors": "docker compose --file vendor/docker-compose.yml down",
     "dev": "tsx watch src/index.ts",
-    "build": "rm -rf dist && tsc"
+
+    "test:debug": "vitest --inspect-brk --no-file-parallelism",
+    "test:debug-run": "vitest run --inspect-brk --no-file-parallelism"
+
   },
   "keywords": [
     "Hono",
@@ -29,8 +36,12 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
     "@types/node": "^24.0.12",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4",
+    "vitest-fetch-mock": "^0.4.5"
   }
 }
+

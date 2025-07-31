@@ -1,8 +1,6 @@
 import { createRoute } from "@hono/zod-openapi";
 import { paymentPostSchema, paymentSummarySchema } from "./payment.types";
 
-
-
 export const createPaymentRoute = createRoute({
   method: "post",
   path: "/payments",
@@ -10,10 +8,10 @@ export const createPaymentRoute = createRoute({
     body: {
       content: {
         "application/json": {
-          schema: paymentPostSchema
-        }
-      }
-    }
+          schema: paymentPostSchema,
+        },
+      },
+    },
   },
   responses: {
     202: {
