@@ -18,7 +18,7 @@ updates:
     reviewers:
       - "paulopatto"
     commit-message:
-      prefix: "build(package.json): "
+      prefix: "build: "
       include: "scope"
     groups:
       dev-dependencies:
