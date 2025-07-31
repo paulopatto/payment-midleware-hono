@@ -34,10 +34,12 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: "22"
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm ci --force --no-audit
+          npm install @rollup/rollup-linux-x64-gnu --save-optional
 
       - name: Run tests
         run: npm test
@@ -45,7 +47,7 @@ jobs:
   k6-tests:
     name: K6 Load Test
     runs-on: ubuntu-latest
-    needs: 
+    needs:
       - test-suite
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     steps:
@@ -75,6 +77,6 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker-compose -f compose.yaml down --rmi all
-      - run:  sleep 10
+      - run: sleep 10
       - run: docker-compose -f vendor/docker-compose.yml down --rmi all
 
