@@ -41,4 +41,7 @@ updates:
     commit-message:
       prefix: "build(docker): "
       include: "scope"
+    ignore:
+      - dependency-name: "node"
+        update-types: ["version-update:semver-major"]
 
