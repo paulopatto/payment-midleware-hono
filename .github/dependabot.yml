@@ -17,8 +17,36 @@ updates:
       - "paulopatto"
     commit-message:
       prefix: "build(package.json): "
-      prefix-development: "build(deps-dev): "
       include: "scope"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "eslint*"
+          - "prettier*"
+          - "jest*"
+          - "vitest*"
+          - "typescript"
+          - "tsx"
+          - "@faker-js/*"
+        update-types:
+          - "minor"
+          - "patch"
+      hono-dependencies:
+        patterns:
+          - "@hono/*"
+          - "hone"
+        update-types:
+          - "minor"
+          - "patch"
+      queue-dependencies:
+        patterns:
+          - "bullmq"
+          - "@bull-board/*"
+          - "ioredis"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
