@@ -25,13 +25,14 @@ export async function createPaymentHandler(c: any) {
 export async function getSummaryHandler(c: any) {
   const summary = {
     default: {
-      totalRequests: await redis.get("summary:default:count") || 0,
-      totalAmount: await redis.get("summary:default:amount") || 0,
+      totalRequests: (await redis.get("summary:default:count")) || 0,
+      totalAmount: (await redis.get("summary:default:amount")) || 0,
     },
     fallback: {
-      totalRequests: await redis.get("summary:fallback:count") || 0,
-      totalAmount: await redis.get("summary:fallback:amount") || 0,
+      totalRequests: (await redis.get("summary:fallback:count")) || 0,
+      totalAmount: (await redis.get("summary:fallback:amount")) || 0,
     },
   };
   return c.json(summary);
 }
+
