@@ -44,8 +44,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '22'
-          cache: 'npm'
+          node-version: "22"
 
       - name: Build .env
         run: |
@@ -98,6 +97,6 @@ jobs:
       - name: Cleanup
         if: always()
         run: docker-compose -f compose.yaml down --rmi all
-      - run:  sleep 10
+      - run: sleep 10
       - run: docker-compose -f vendor/docker-compose.yml down --rmi all
 
