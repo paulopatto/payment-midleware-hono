@@ -14,6 +14,8 @@ updates:
       time: "08:00"
       timezone: "America/Sao_Paulo"
     assignees:
+      - "dependabot"
+    reviewers:
       - "paulopatto"
     commit-message:
       prefix: "build(package.json): "
@@ -56,6 +58,8 @@ updates:
       time: "08:30"
       timezone: "America/Sao_Paulo"
     assignees:
+      - "dependabot"
+    reviewers:
       - "paulopatto"
     open-pull-requests-limit: 5
     commit-message:
@@ -70,6 +74,8 @@ updates:
       time: "08:45"
       timezone: "America/Sao_Paulo"
     assignees:
+      - "dependabot"
+    reviewers:
       - "paulopatto"
     open-pull-requests-limit: 3
     commit-message:
