@@ -24,6 +24,40 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.changes.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: changes
+        with:
+          filters: |
+            backend:
+              - 'src/**'
+              - 'package.json'
+              - 'package-lock.json'
+
+  dependency-scanner:
+    name: Dependency Scanner
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check if deps (package*.json) changed # Alternativamente poderia usar o dorny/paths-filter
+        id: check-changes
+        run: |
+          if git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep -E "(package\.json|package-lock\.json)"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Security audit
+        if: steps.check-changes.outputs.changed == 'true'
+        run: npm audit --audit-level high
+
   test-suite:
     name: Test Suite
     runs-on: ubuntu-latest
@@ -69,10 +103,13 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - test-suite
-    if: github.event_name == 'pull_request' || github.event_name == 'push'
+      - changes
+    if: ${{ needs.changes.outputs.backend == 'true' && (github.event_name == 'pull_request' || github.event_name == 'push') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Docker Compose
         run: |

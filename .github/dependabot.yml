@@ -13,10 +13,42 @@ updates:
       day: "monday"
       time: "08:00"
       timezone: "America/Sao_Paulo"
+    assignees:
+      - "dependabot"
+    reviewers:
+      - "paulopatto"
     commit-message:
       prefix: "build(package.json): "
-      prefix-development: "build(deps-dev): "
       include: "scope"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "@types/*"
+          - "eslint*"
+          - "prettier*"
+          - "jest*"
+          - "vitest*"
+          - "typescript"
+          - "tsx"
+          - "@faker-js/*"
+        update-types:
+          - "minor"
+          - "patch"
+      hono-dependencies:
+        patterns:
+          - "@hono/*"
+          - "hone"
+        update-types:
+          - "minor"
+          - "patch"
+      queue-dependencies:
+        patterns:
+          - "bullmq"
+          - "@bull-board/*"
+          - "ioredis"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -25,6 +57,10 @@ updates:
       day: "monday"
       time: "08:30"
       timezone: "America/Sao_Paulo"
+    assignees:
+      - "dependabot"
+    reviewers:
+      - "paulopatto"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(ci): "
@@ -37,6 +73,10 @@ updates:
       day: "monday"
       time: "08:45"
       timezone: "America/Sao_Paulo"
+    assignees:
+      - "dependabot"
+    reviewers:
+      - "paulopatto"
     open-pull-requests-limit: 3
     commit-message:
       prefix: "build(docker): "
