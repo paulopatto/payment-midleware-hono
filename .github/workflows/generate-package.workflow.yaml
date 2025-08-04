@@ -74,12 +74,12 @@ jobs:
       - name: Attest artifact
         uses: actions/attest-build-provenance@v2
         id: attest
+        continue-on-error: true
         with:
           subject-name: ${{ env.RESGISTRY }}/${{ github.repository_owner }}/${{ github.event.repository.name }}
           subject-digest: ${{ steps.build-and-push.outputs.digest }}
           push-to-registry: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
 
 
   # Dockerhub
