@@ -1,3 +1,4 @@
+import './shared/monitoring';
 import { serve } from "@hono/node-server";
 import { env } from "./shared/env";
 import app from "./app";

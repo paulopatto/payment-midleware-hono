@@ -1,5 +1,12 @@
+import { metrics, trace } from '@opentelemetry/api';
 import { env } from "../shared/env";
 import { redis, redisPrefix } from "../shared/redis";
+
+const meter = metrics.getMeter('rinha-bullmq');
+const processedCounter = meter.createCounter('bullmq_jobs_processed', { description: 'Jobs processados' });
+const failedCounter = meter.createCounter('bullmq_jobs_failed', { description: 'Jobs falhos' });
+const fallbackCounter = meter.createCounter('bullmq_jobs_fallback', { description: 'Jobs enviados para fallback' });
+const durationHistogram = meter.createHistogram('bullmq_job_duration_ms', { description: 'Duração dos jobs em ms' });
 
 const processors = {
   default: {
@@ -58,17 +65,15 @@ async function registerPayment(
 }
 
 export async function paymentWorker(job: any) {
+  const span = trace.getTracer('rinha-bullmq').startSpan('process_payment_job', {
+    attributes: { jobId: job.id, correlationId: job.data?.correlationId }
+  });
+  const startTime = Date.now();
   const paymentData = job.data;
   let processor = processors.default;
 
   try {
     //FIXME: Mudar isso para que dada as tentativas ele jogue para a fila de fallback
-    if (job.attemptsMade >= 2) {
-      console.warn(
-        `Retrying payment job ${job.id} for correlationId ${paymentData.correlationId}`,
-      );
-    }
-
     if (
       job.attemptsMade >= env.PAYMENT_PROCESSOR_RETRY_LIMIT_BEFORE_USE_FALLBACK
     ) {
@@ -76,22 +81,31 @@ export async function paymentWorker(job: any) {
         `Using fallback payment processor after ${job.attemptsMade} attempts`,
         { correlationId: paymentData.correlationId },
       );
+      fallbackCounter.add(1);
       processor = processors.fallback;
     }
 
     const response = await sendPaymentRequest(processor, paymentData);
 
     if (response.ok) {
+      processedCounter.add(1);
       registerPayment(processor, paymentData);
     }
 
     return null;
   } catch (error: any) {
+    failedCounter.add(1);
+    span.recordException(error);
     console.error(`Error with processor due ${error.message}`, {
       correlationId: paymentData.correlationId,
-      error,
     });
     throw error;
+  }
+  finally {
+    const duration = Date.now() - startTime;
+    durationHistogram.record(duration);
+    span.setAttribute('jobDurationMs', duration);
+    span.end();
   }
 }
 
