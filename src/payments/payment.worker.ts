@@ -1,6 +1,7 @@
 import { metrics, trace } from '@opentelemetry/api';
 import { env } from "../shared/env";
 import { redis, redisPrefix } from "../shared/redis";
+import { logger } from '../shared/logger';
 
 const meter = metrics.getMeter('rinha-bullmq');
 const processedCounter = meter.createCounter('bullmq_jobs_processed', { description: 'Jobs processados' });
@@ -72,12 +73,13 @@ export async function paymentWorker(job: any) {
   const paymentData = job.data;
   let processor = processors.default;
 
+  logger.info('Processing payment job', { jobId: job.id, correlationId: job.data?.correlationId });
   try {
     //FIXME: Mudar isso para que dada as tentativas ele jogue para a fila de fallback
     if (
       job.attemptsMade >= env.PAYMENT_PROCESSOR_RETRY_LIMIT_BEFORE_USE_FALLBACK
     ) {
-      console.warn(
+      logger.warn(
         `Using fallback payment processor after ${job.attemptsMade} attempts`,
         { correlationId: paymentData.correlationId },
       );
@@ -96,8 +98,9 @@ export async function paymentWorker(job: any) {
   } catch (error: any) {
     failedCounter.add(1);
     span.recordException(error);
-    console.error(`Error with processor due ${error.message}`, {
+    logger.error(`Error with processor due ${error.message}`, {
       correlationId: paymentData.correlationId,
+      error
     });
     throw error;
   }
