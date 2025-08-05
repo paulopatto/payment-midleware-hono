@@ -36,6 +36,7 @@
     "dotenv": "^17.2.1",
     "hone": "^1.1.0",
     "ioredis": "^5.7.0",
+    "winston": "^3.17.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

@@ -25,7 +25,7 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-
+import { logger } from '../shared/logger';
 
 const prometheusPort = 9464;
 
@@ -39,4 +39,4 @@ const sdk = new NodeSDK({
 });
 
 sdk.start();
-console.log(`Prometheus metrics exposed at http://localhost:${prometheusPort}/metrics`);
+logger.info(`Prometheus metrics exposed at http://localhost:${prometheusPort}/metrics`);
