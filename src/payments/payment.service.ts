@@ -1,25 +1,48 @@
+import { metrics, trace } from '@opentelemetry/api';
 import { savePaymentToRedis } from "./payment.repository";
 import { paymentQueue } from "../shared/queue";
 import { redis, redisPrefix } from "../shared/redis";
+import { logger } from '../shared/logger';
+
+const meter = metrics.getMeter('rinha-payments');
+const paymentsReceived = meter.createCounter('payments_received', { description: 'Pagamentos recebidos' });
+const paymentProcessingDuration = meter.createHistogram('payment_processing_duration', { description: 'Duração do processamento de pagamentos' });
 
 export async function createPaymentHandler(c: any) {
+  const span = trace.getTracer('rinha-payments').startSpan('create_payment');
+  const startTime = Date.now();
   const paymentData = await c.req.json();
   const requestedAt = new Date().toISOString();
   const payload = {
     ...paymentData,
     requestedAt,
   };
-  savePaymentToRedis(payload.correlationId, payload);
-  paymentQueue.add("paymentsQueue", payload, {
-    attempts: 10,
-    backoff: { type: "exponential", delay: 500 },
-  });
 
-  return c.json({}, 202, {
-    headers: [
-      `Location: http://localhost:8080/payments/${paymentData.correlationId}`,
-    ],
-  });
+  try {
+    savePaymentToRedis(payload.correlationId, payload);
+    paymentQueue.add("paymentsQueue", payload, {
+      attempts: 10,
+      backoff: { type: "exponential", delay: 500 },
+    });
+
+    logger.info(`Payment request received`, { correlationId: payload.correlationId });
+
+    return c.json({}, 202, {
+      headers: [
+        `Location: http://localhost:8080/payments/${paymentData.correlationId}`,
+      ],
+    });
+  } catch(error: any) {
+    logger.error('Error processing payment', { error, correlationId: payload.correlationId });
+    span.recordException(error);
+    throw error;
+  } finally {
+    const duration = Date.now() - startTime;
+    paymentProcessingDuration.record(duration);
+    span.setAttribute('paymentDurationMs', duration);
+    span.end();
+  }
+
 }
 
 async function getTransactions(procName: string, start: number, end: number) {

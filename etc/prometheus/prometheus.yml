@@ -1,0 +1,32 @@
+# Configuração do Prometheus
+global:
+  scrape_interval: 15s # Intervalo padrão para coletar métricas
+  evaluation_interval: 15s # Intervalo para avaliar regras
+
+# Configuração de regras de alerta (opcional)
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+# Configuração de scraping
+scrape_configs:
+  # Monitoramento do próprio Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090', 'host.docker.internal:9464'] # Ajuste a porta conforme necessário
+
+  # Monitoramento de aplicações (exemplo)
+  # Adicione seus targets aqui
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: []  # Adicione aqui os endereços dos seus node-exporters
+
+  # Exemplo de job para aplicações personalizadas
+  - job_name: 'custom-app'
+    static_configs:
+      - targets: []  # Adicione aqui os endereços das suas aplicações
+
+  # Se você tiver Jaeger com métricas habilitadas
+  - job_name: 'jaeger'
+    static_configs:
+      - targets: ['jaeger:14269']
