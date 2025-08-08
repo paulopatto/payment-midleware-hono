@@ -19,7 +19,7 @@
 - [Node.js](https://nodejs.org/en/download/) (LTS 22)
 - [npm](https://www.npmjs.com/) ou [yarn](https://yarnpkg.com/)
 
-## Produção 
+## Produção
 
 Variaveis de ambiente necessárias:
 
@@ -34,8 +34,8 @@ Variaveis de ambiente necessárias:
 1.  Clone o repositório:
 
 ```bash
-git clone <seu-repositorio>
-cd rinha_ed3_payment
+git clone <seu-repositorio> rinha
+cd rinha
 
 ```
 

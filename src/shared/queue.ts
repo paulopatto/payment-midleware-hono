@@ -5,8 +5,9 @@ import { HonoAdapter } from "@bull-board/hono";
 import { serveStatic } from "@hono/node-server/serve-static";
 import { redis } from "./redis";
 import { paymentWorker } from "../payments/payment.worker";
+import { env } from "./env";
 
-const queuePrefix = process.env.NODE_ENV
+const queuePrefix = env.NODE_ENV;
 
 export const paymentQueue = new Queue("paymentsQueue", { connection: redis, prefix: queuePrefix });
 export const QUEUE_ADMIN_UI = "/admin/queue";
