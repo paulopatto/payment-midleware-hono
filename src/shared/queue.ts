@@ -1,4 +1,5 @@
 import { Queue, Worker } from "bullmq";
+import { BullMQOtel } from "bullmq-otel";
 import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { HonoAdapter } from "@bull-board/hono";
@@ -9,7 +10,11 @@ import { env } from "./env";
 
 const queuePrefix = env.NODE_ENV;
 
-export const paymentQueue = new Queue("paymentsQueue", { connection: redis, prefix: queuePrefix });
+export const paymentQueue = new Queue("paymentsQueue", {
+  connection: redis,
+  prefix: queuePrefix,
+  telemetry: new BullMQOtel(`${queuePrefix}-otel`),
+});
 export const QUEUE_ADMIN_UI = "/admin/queue";
 
 const serverAdapter = new HonoAdapter(serveStatic);
@@ -23,5 +28,6 @@ createBullBoard({
 export const bullAdmin = serverAdapter;
 
 new Worker("paymentsQueue", paymentWorker, {
-  connection: redis
+  connection: redis,
+  telemetry: new BullMQOtel(`${queuePrefix}-otel`),
 });
