@@ -111,10 +111,13 @@ jobs:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Get short SHA
+        id: slug
+        run: echo "GIT_SHORT_SHA7=$(echo ${GITHUB_SHA} | cut -c1-7)" >> "$GITHUB_OUTPUT"
+
       - name: Extract release tag
         id: extract_release_tag
         run: |
-
           if [[ -n "${{ github.event.inputs.tag }}" ]]; then
             echo "::set-output name=tag::${{ github.event.inputs.tag }}"
           elif [[ -n "${{ github.event.release.tag_name }}" ]]; then
@@ -124,21 +127,33 @@ jobs:
             exit 1 # Exit with error if no tag is found
           fi
 
-      - name: Build and tag Docker image with release version
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.extract_release_tag.outputs.tag }}
-          push: true
+      # - name: Build and tag Docker image with release version
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     platforms: linux/amd64,linux/arm64
+      #     push: true
+      #     tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.extract_release_tag.outputs.tag }}
 
-      - name: Build and tag Docker image with 'latest' tag
-        uses: docker/build-push-action@v3
+      # - name: Build and tag Docker image with 'latest' tag
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     platforms: linux/amd64,linux/arm64
+      #     tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
+      #     push: true
+
+      - name: Build and tag Docker image with release version
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
-          tags: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
           push: true
+          tags: |
+            ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.slug.outputs.GIT_SHORT_SHA7 }}
+            ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:${{ steps.extract_release_tag.outputs.tag }}
+            ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}:latest
+
 
       - name: Update Dockerhub description
         uses: peter-evans/dockerhub-description@v4.0.2
@@ -147,3 +162,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: ${{ vars.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}
           readme-filepath: ./README.md
+          enable-url-completion: true
