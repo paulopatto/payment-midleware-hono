@@ -55,7 +55,7 @@ jobs:
           fi
 
       - name: Pushing Docker image with release tag version
-        uses: docker/build-push-action@v5.0.0
+        uses: docker/build-push-action@v6
         id: build-and-push
         with:
           context: .
@@ -64,7 +64,7 @@ jobs:
           push: true
 
       - name: Pushing Docker image with 'latest' tag
-        uses: docker/build-push-action@v5.0.0
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -125,7 +125,7 @@ jobs:
           fi
 
       - name: Build and tag Docker image with release version
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
@@ -133,7 +133,7 @@ jobs:
           push: true
 
       - name: Build and tag Docker image with 'latest' tag
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: .
           platforms: linux/amd64,linux/arm64
