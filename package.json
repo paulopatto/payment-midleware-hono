@@ -29,7 +29,7 @@
     "@bull-board/ui": "^6.11.0",
     "@hono/node-server": "^1.18.0",
     "@hono/zod-openapi": "^0.19.9",
-    "bullmq": "^5.56.9",
+    "bullmq": "^5.56.10",
     "dotenv": "^17.2.1",
     "hone": "^1.1.0",
     "ioredis": "^5.7.0",
