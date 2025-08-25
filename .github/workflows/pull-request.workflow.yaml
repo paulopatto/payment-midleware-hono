@@ -29,7 +29,7 @@ jobs:
     outputs:
       backend: ${{ steps.changes.outputs.backend }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dorny/paths-filter@v3
         id: changes
         with:
@@ -43,7 +43,7 @@ jobs:
     name: Dependency Scanner
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
       - name: Check if deps (package*.json) changed # Alternativamente poderia usar o dorny/paths-filter
@@ -73,7 +73,7 @@ jobs:
           --health-retries 5
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -107,7 +107,7 @@ jobs:
     if: ${{ needs.changes.outputs.backend == 'true' && (github.event_name == 'pull_request' || github.event_name == 'push') }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
